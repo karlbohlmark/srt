@@ -14,11 +14,13 @@
 #include <string>
 #include <map>
 #include <stdexcept>
+#include <chrono>
 
 #include "transmitbase.hpp"
 #include <udt.h> // Needs access to CUDTException
 
 using namespace std;
+using interval_clock = std::chrono::steady_clock;
 
 // Trial version of an exception. Try to implement later an official
 // interruption mechanism in SRT using this.
@@ -120,6 +122,8 @@ public:
     }
 
     bool AcceptNewClient() override { return SrtCommon::AcceptNewClient(); }
+protected:
+    interval_clock::time_point m_last_stats_report = interval_clock::now();
 };
 
 class SrtTarget: public Target, public SrtCommon
@@ -156,6 +160,8 @@ public:
         return socket;
     }
     bool AcceptNewClient() override { return SrtCommon::AcceptNewClient(); }
+protected:
+    interval_clock::time_point m_last_stats_report = interval_clock::now();
 };
 
 
