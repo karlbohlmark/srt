@@ -370,6 +370,7 @@ public:
         output << "\"bytes\":" << mon.byteSent << ",";
         output << "\"bytesUnique\":" << mon.byteSentUnique << ",";
         output << "\"bytesDropped\":" << mon.byteSndDrop << ",";
+        output << "\"msSendBuffer\":" << mon.msSndBuf << ",";
         output << "\"mbitRate\":" << mon.mbpsSendRate;
         output << "},";
         output << "\"recv\": {";
@@ -386,6 +387,7 @@ public:
         output << "\"bytesUnique\":" << mon.byteRecvUnique << ",";
         output << "\"bytesLost\":" << mon.byteRcvLoss << ",";
         output << "\"bytesDropped\":" << mon.byteRcvDrop << ",";
+        output << "\"msRecvBuffer\":" << mon.msRcvBuf << ",";
         output << "\"mbitRate\":" << mon.mbpsRecvRate;
         output << "}";
         output << "}" << endl;
