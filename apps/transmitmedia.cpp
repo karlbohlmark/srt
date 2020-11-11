@@ -525,7 +525,7 @@ int SrtSource::Read(size_t chunk, MediaPacket& pkt, ostream &out_stats)
         pkt.payload.resize(chunk);
 
     const bool need_bw_report = transmit_bw_report && (counter % transmit_bw_report) == transmit_bw_report - 1;
-    const bool need_stats_report = transmit_stats_report && (counter % transmit_stats_report) == transmit_stats_report - 1;
+    const bool need_stats_report = transmit_stats_report && interval_clock::now() > m_last_stats_report + std::chrono::seconds(transmit_stats_report);
 
     if (need_bw_report || need_stats_report)
     {
@@ -535,8 +535,10 @@ int SrtSource::Read(size_t chunk, MediaPacket& pkt, ostream &out_stats)
         {
             if (need_bw_report)
                 cerr << transmit_stats_writer->WriteBandwidth(perf.mbpsBandwidth) << std::flush;
-            if (need_stats_report)
+            if (need_stats_report) {
                 out_stats << transmit_stats_writer->WriteStats(m_sock, perf) << std::flush;
+                m_last_stats_report = interval_clock::now();
+            }
         }
     }
     ++counter;
@@ -574,7 +576,7 @@ int SrtTarget::Write(const char* data, size_t size, int64_t src_time, ostream &o
     }
 
     const bool need_bw_report = transmit_bw_report && (counter % transmit_bw_report) == transmit_bw_report - 1;
-    const bool need_stats_report = transmit_stats_report && (counter % transmit_stats_report) == transmit_stats_report - 1;
+    const bool need_stats_report = transmit_stats_report && interval_clock::now() > m_last_stats_report + std::chrono::seconds(transmit_stats_report);
 
     if (need_bw_report || need_stats_report)
     {
@@ -584,8 +586,10 @@ int SrtTarget::Write(const char* data, size_t size, int64_t src_time, ostream &o
         {
             if (need_bw_report)
                 cerr << transmit_stats_writer->WriteBandwidth(perf.mbpsBandwidth) << std::flush;
-            if (need_stats_report)
+            if (need_stats_report) {
                 out_stats << transmit_stats_writer->WriteStats(m_sock, perf) << std::flush;
+                m_last_stats_report = interval_clock::now();
+            }
         }
     }
     ++counter;
